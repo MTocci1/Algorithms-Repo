@@ -1,14 +1,15 @@
 #include <iostream>
 #include <fstream>
+#include <cctype>
 #include <string>
 
 // Define a Node class for the stack and queue
 class Node {
 public:
-    int data;
+    char data;
     Node* next;
 
-    Node(int value) : data(value), next(nullptr) {}
+    Node(char value) : data(value), next(nullptr) {}
 };
 
 // Create a stack using the Node class
@@ -21,19 +22,19 @@ public:
     Stack() : top(nullptr) {}
 
     // Push a value onto the stack
-    void push(int value) {
+    void push(char value) {
         Node* newNode = new Node(value);
         newNode -> next = top;
         top = newNode;
     }
 
     // Pop the top value from the stack
-    int pop() {
+    char pop() {
         if (isEmpty()) {
             std::cerr << "Stack is empty." << std::endl;
             return -1;
         }
-        int value = top->data;
+        char value = top->data;
         Node* temp = top;
         top = top -> next;
         delete temp;
@@ -56,7 +57,7 @@ public:
     Queue() : front(nullptr), back(nullptr) {}
 
     // Enqueue a value into the queue
-    void enqueue(int value) {
+    void enqueue(char value) {
         Node* newNode = new Node(value);
         if (isEmpty()) {
             front = back = newNode;
@@ -68,12 +69,12 @@ public:
     }
 
     // Dequeue a value from the queue
-    int dequeue() {
+    char dequeue() {
         if (isEmpty()) {
             std::cerr << "Queue is empty." << std::endl;
             return -1;
         }
-        int value = front->data;
+        char value = front->data;
         Node* temp = front;
         front = front -> next;
         delete temp;
@@ -86,29 +87,53 @@ public:
     }
 };
 
+// Check if a string is a palindrome (ignoring spaces and capitalization)
+bool isPalindrome(const std::string& str) {
+    Stack stack;
+    Queue queue;
+
+    // Push characters to the stack and queue (ignoring spaces and converting to lowercase)
+    for (char i : str) {
+        if (!std::isspace(i)) {
+            stack.push(std::tolower(i));
+            queue.enqueue(std::tolower(i));
+        }
+    }
+
+    // Compare characters from the stack and queue
+    while (!stack.isEmpty() && !queue.isEmpty()) {
+        if (stack.pop() != queue.dequeue()) {
+            // Not a palindrome
+            return false;
+        }
+    }
+
+    return true;
+}
+
 
 int main() {
     // Test the stack
-    Stack myStack;
-    myStack.push(1);
-    myStack.push(2);
-    myStack.push(3);
+    Stack testStack;
+    testStack.push('A');
+    testStack.push('B');
+    testStack.push('C');
 
     std::cout << "Stack contents: ";
-    while (!myStack.isEmpty()) {
-        std::cout << myStack.pop() << " ";
+    while (!testStack.isEmpty()) {
+        std::cout << testStack.pop() << " ";
     }
     std::cout << std::endl;
 
     // Test the queue
-    Queue myQueue;
-    myQueue.enqueue(1);
-    myQueue.enqueue(2);
-    myQueue.enqueue(3);
+    Queue testQueue;
+    testQueue.enqueue('A');
+    testQueue.enqueue('B');
+    testQueue.enqueue('C');
 
     std::cout << "Queue contents: ";
-    while (!myQueue.isEmpty()) {
-        std::cout << myQueue.dequeue() << " ";
+    while (!testQueue.isEmpty()) {
+        std::cout << testQueue.dequeue() << " ";
     }
     std::cout << std::endl;
 
@@ -149,10 +174,12 @@ int main() {
     // Close the file
     file.close();
 
-    // Print the magic items:
-    for (int i = 0; i < magicItemsSize; ++i) 
-    {
-        std::cout << magicItemsArray[i] << std::endl;
+    std::cout << "Palindromes: " << std::endl;
+    // Check each line in the array for palindromes and print it if it is
+    for (int i = 0; i < magicItemsSize; ++i) {
+        if (isPalindrome(magicItemsArray[i])) {
+            std::cout << magicItemsArray[i] << std::endl;
+        }
     }
 
     // Delete dynamically allocated memory
