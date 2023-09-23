@@ -1,7 +1,10 @@
 #include <iostream>
 #include <fstream>
-#include <cctype>
 #include <string>
+// Include for std::random_device
+#include <random>
+
+using namespace std;
 
 // Define a Node class for the stack and queue
 class Node {
@@ -31,7 +34,7 @@ public:
     // Pop the top value from the stack
     char pop() {
         if (isEmpty()) {
-            std::cerr << "Stack is empty." << std::endl;
+            cerr << "Stack is empty." << endl;
             return -1;
         }
         char value = top->data;
@@ -71,7 +74,7 @@ public:
     // Dequeue a value from the queue
     char dequeue() {
         if (isEmpty()) {
-            std::cerr << "Queue is empty." << std::endl;
+            cerr << "Queue is empty." << endl;
             return -1;
         }
         char value = front->data;
@@ -88,15 +91,15 @@ public:
 };
 
 // Check if a string is a palindrome (ignoring spaces and capitalization)
-bool isPalindrome(const std::string& str) {
+bool isPalindrome(const string& str) {
     Stack stack;
     Queue queue;
 
     // Push characters to the stack and queue (ignoring spaces and converting to lowercase)
     for (char i : str) {
-        if (!std::isspace(i)) {
-            stack.push(std::tolower(i));
-            queue.enqueue(std::tolower(i));
+        if (!isspace(i)) {
+            stack.push(tolower(i));
+            queue.enqueue(tolower(i));
         }
     }
 
@@ -111,6 +114,42 @@ bool isPalindrome(const std::string& str) {
     return true;
 }
 
+// Shuffle the array using the Knuth shuffle algorithm with std::random_device seeding
+void shuffle(string* arr, int size) {
+    random_device rd;
+    srand(rd());
+
+    for (int i = size - 1; i > 0; --i) {
+        // Generate a random index between 0 and i
+        int j = rand() % (i + 1); 
+        // Swap elements at i and j
+        swap(arr[i], arr[j]);     
+    }
+}
+
+// Selection sort 
+void selectionSort(string* arr, int size) {
+    for (int i = 0; i < size - 1; ++i) {
+        int index = i;
+        for (int j = i + 1; j < size; ++j) {
+            // Convert both strings to lowercase for comparison
+            for (char& ch : arr[j]) {
+                ch = tolower(ch);
+            }
+            for (char& ch : arr[index]) {
+                ch = tolower(ch);
+            }
+            // Compare the lowercase strings
+            if (arr[j] < arr[index]) {
+                index = j;
+            }
+        }
+        // If a smaller element was found, swap it with the current element
+        if (index != i) {
+            swap(arr[i], arr[index]);
+        }
+    }
+}
 
 int main() {
     // Test the stack
@@ -119,11 +158,11 @@ int main() {
     testStack.push('B');
     testStack.push('C');
 
-    std::cout << "Stack contents: ";
+    cout << "Stack contents: ";
     while (!testStack.isEmpty()) {
-        std::cout << testStack.pop() << " ";
+        cout << testStack.pop() << " ";
     }
-    std::cout << std::endl;
+    cout << endl;
 
     // Test the queue
     Queue testQueue;
@@ -131,27 +170,27 @@ int main() {
     testQueue.enqueue('B');
     testQueue.enqueue('C');
 
-    std::cout << "Queue contents: ";
+    cout << "Queue contents: ";
     while (!testQueue.isEmpty()) {
-        std::cout << testQueue.dequeue() << " ";
+        cout << testQueue.dequeue() << " ";
     }
-    std::cout << std::endl;
+    cout << endl;
 
     // Read all lines of magicitems.txt and put them in an array
     // Open the magicitems.txt file
-    std::ifstream file("magicitems.txt");
+    ifstream file("magicitems.txt");
 
     // Handle failure
     if (!file) 
     {
-        std::cerr << "Failed to open magicitems.txt" << std::endl;
+        cerr << "Failed to open magicitems.txt" << endl;
         return 1;
     }
 
     // Count the number of lines in the file
     int magicItemsSize = 0;
-    std::string line;
-    while (std::getline(file, line)) 
+    string line;
+    while (getline(file, line)) 
     {
         magicItemsSize++;
     }
@@ -161,11 +200,11 @@ int main() {
     file.open("magicitems.txt");
 
     // Create a dynamically allocated array
-    std::string* magicItemsArray = new std::string[magicItemsSize];
+    string* magicItemsArray = new string[magicItemsSize];
 
     // Read the file line by line and store each line in the array
     int index = 0;
-    while (std::getline(file, line)) 
+    while (getline(file, line)) 
     {
         magicItemsArray[index] = line;
         index++;
@@ -174,12 +213,24 @@ int main() {
     // Close the file
     file.close();
 
-    std::cout << "Palindromes: " << std::endl;
+
+    cout << "Palindromes: " << endl;
     // Check each line in the array for palindromes and print it if it is
     for (int i = 0; i < magicItemsSize; ++i) {
         if (isPalindrome(magicItemsArray[i])) {
-            std::cout << magicItemsArray[i] << std::endl;
+            cout << magicItemsArray[i] << endl;
         }
+    }
+
+    // Shuffle before sorting
+    shuffle(magicItemsArray, magicItemsSize);
+
+    // Sort magicItemsArray using selection sort
+    selectionSort(magicItemsArray, magicItemsSize);
+
+    cout << "\nSorted Magic Items:" << endl;
+    for (int i = 0; i < magicItemsSize; ++i) {
+        cout << magicItemsArray[i] << endl;
     }
 
     // Delete dynamically allocated memory
