@@ -128,7 +128,7 @@ void shuffle(string* arr, int size) {
 }
 
 // Selection sort 
-void selectionSort(string* arr, int size) {
+void selectionSort(string* arr, int size, int& comparisons) {
     for (int i = 0; i < size - 1; ++i) {
         int index = i;
         for (int j = i + 1; j < size; ++j) {
@@ -139,6 +139,7 @@ void selectionSort(string* arr, int size) {
             for (char& ch : arr[index]) {
                 ch = tolower(ch);
             }
+            comparisons++;
             // Compare the lowercase strings
             if (arr[j] < arr[index]) {
                 index = j;
@@ -148,6 +149,113 @@ void selectionSort(string* arr, int size) {
         if (index != i) {
             swap(arr[i], arr[index]);
         }
+    }
+}
+
+// Insertion sort
+void insertionSort(string* arr, int size, int& comparisons) {
+    for (int i = 1; i < size; ++i) {
+        int j = i;
+        while (j > 0) {
+            // Convert both strings to lowercase for comparison
+            for (char& ch : arr[j]) {
+                ch = tolower(ch);
+            }
+            for (char& ch : arr[j - 1]) {
+                ch = tolower(ch);
+            }
+            comparisons++;
+            // Compare the lowercase strings
+            if (arr[j] < arr[j - 1]) {
+                swap(arr[j], arr[j - 1]);
+                --j;
+            }
+            else {
+                break;
+            }
+        }
+    }
+}
+
+// Function to merge two sorted subarrays
+void merge(string* arr, int left, int mid, int right, int& comparisons) {
+    // Calculate the sizes of the subarrays
+    int sizeLeft = mid - left + 1;
+    int sizeRight = right - mid;
+
+    // Create temporary arrays for the subarrays
+    string* leftArray = new string[sizeLeft];
+    string* rightArray = new string[sizeRight];
+
+    // Copy data to temporary arrays
+    for (int i = 0; i < sizeLeft; ++i) {
+        leftArray[i] = arr[left + i];
+    }
+    for (int i = 0; i < sizeRight; ++i) {
+        rightArray[i] = arr[mid + 1 + i];
+    }
+
+    // Merge the two subarrays back into array
+    // Index for the left subarray
+    int i = 0; 
+    // Index for the right subarray
+    int j = 0; 
+    // Index for the merged array
+    int k = left; 
+
+    while (i < sizeLeft && j < sizeRight) {
+        // Convert characters to lowercase for case-insensitive comparison
+        for (char& ch : leftArray[i]) {
+            ch = tolower(ch);
+        }
+        for (char& ch : rightArray[j]) {
+            ch = tolower(ch);
+        }
+
+        comparisons++;
+        // Compare and merge based on lowercase strings
+        if (leftArray[i] <= rightArray[j]) {
+            arr[k] = leftArray[i];
+            ++i;
+        }
+        else {
+            arr[k] = rightArray[j];
+            ++j;
+        }
+        ++k;
+    }
+
+    // Copy the remaining elements of leftArray[], if any
+    while (i < sizeLeft) {
+        arr[k] = leftArray[i];
+        ++i;
+        ++k;
+    }
+
+    // Copy the remaining elements of rightArray[], if any
+    while (j < sizeRight) {
+        arr[k] = rightArray[j];
+        ++j;
+        ++k;
+    }
+
+    // Delete temporary arrays
+    delete[] leftArray;
+    delete[] rightArray;
+}
+
+// Merge sort 
+void mergeSort(string* arr, int left, int right, int& comparisons) {
+    if (left < right) {
+        // Find the middle point
+        int mid = left + (right - left) / 2;
+
+        // Recursively sort the first and second halves
+        mergeSort(arr, left, mid, comparisons);
+        mergeSort(arr, mid + 1, right, comparisons);
+
+        // Merge the sorted halves
+        merge(arr, left, mid, right, comparisons);
     }
 }
 
@@ -214,7 +322,7 @@ int main() {
     file.close();
 
 
-    cout << "Palindromes: " << endl;
+    cout << "\nPalindromes: " << endl;
     // Check each line in the array for palindromes and print it if it is
     for (int i = 0; i < magicItemsSize; ++i) {
         if (isPalindrome(magicItemsArray[i])) {
@@ -225,13 +333,42 @@ int main() {
     // Shuffle before sorting
     shuffle(magicItemsArray, magicItemsSize);
 
+    int comparisonsSelectionSort = 0;
     // Sort magicItemsArray using selection sort
-    selectionSort(magicItemsArray, magicItemsSize);
+    selectionSort(magicItemsArray, magicItemsSize, comparisonsSelectionSort);
 
-    cout << "\nSorted Magic Items:" << endl;
+    cout << "\nSorted Magic Items (Selection Sort):" << endl;
     for (int i = 0; i < magicItemsSize; ++i) {
         cout << magicItemsArray[i] << endl;
     }
+    cout << "Comparisons in Selection Sort: " << comparisonsSelectionSort << endl;
+
+    // Shuffle before sorting again
+    shuffle(magicItemsArray, magicItemsSize);
+
+    int comparisonsInsertionSort = 0;
+    // Sort magicItemsArray using selection sort
+    insertionSort(magicItemsArray, magicItemsSize, comparisonsInsertionSort);
+
+    cout << "\nSorted Magic Items (Insertion Sort):" << endl;
+    for (int i = 0; i < magicItemsSize; ++i) {
+        cout << magicItemsArray[i] << endl;
+    }
+    cout << "Comparisons in Insertion Sort: " << comparisonsInsertionSort << endl;
+
+    // Shuffle before sorting again
+    shuffle(magicItemsArray, magicItemsSize);
+
+    int comparisonsMergeSort = 0;
+    // Sort the strings using merge sort in a case-insensitive manner
+    mergeSort(magicItemsArray, 0, magicItemsSize - 1, comparisonsMergeSort);
+
+    cout << "\nSorted Magic Items (Merge Sort):" << endl;
+    for (int i = 0; i < magicItemsSize; ++i) {
+        cout << magicItemsArray[i] << endl;
+    }
+    cout << "Comparisons in Merge Sort: " << comparisonsMergeSort << endl;
+
 
     // Delete dynamically allocated memory
     delete[] magicItemsArray;
