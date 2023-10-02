@@ -259,6 +259,50 @@ void mergeSort(string* arr, int left, int right, int& comparisons) {
     }
 }
 
+// Partition function for quick sort
+int partition(string* arr, int low, int high, int& comparisons) {
+    // Choose the rightmost element as the pivot
+    string pivot = arr[high]; 
+    // Index of the smaller element
+    int i = (low - 1); 
+
+    for (int j = low; j <= high - 1; ++j) {
+        // Convert both strings to lowercase for comparison
+        for (char& ch : arr[j]) {
+            ch = tolower(ch);
+        }
+        for (char& ch : pivot) {
+            ch = tolower(ch);
+        }
+
+        comparisons++;
+        // Compare the lowercase strings
+        if (arr[j] < pivot) {
+            ++i; 
+            swap(arr[i], arr[j]);
+        }
+    }
+
+    // Swap the pivot element
+    swap(arr[i + 1], arr[high]);
+    return (i + 1);
+}
+
+// Quick sort
+void quickSort(string* arr, int low, int high, int& comparisons) {
+    if (low < high) {
+        // Find the pivot element such that
+        // element smaller than pivot are on the left and
+        // elements greater than pivot are on the right
+        int pivotIndex = partition(arr, low, high, comparisons);
+
+        // Recursively sort the subarrays
+        quickSort(arr, low, pivotIndex - 1, comparisons);
+        quickSort(arr, pivotIndex + 1, high, comparisons);
+    }
+}
+
+
 int main() {
     // Test the stack
     Stack testStack;
@@ -368,6 +412,20 @@ int main() {
         cout << magicItemsArray[i] << endl;
     }
     cout << "Comparisons in Merge Sort: " << comparisonsMergeSort << endl;
+
+    // Shuffle before sorting again
+    shuffle(magicItemsArray, magicItemsSize);
+
+    // Sort magicItemsArray using quick sort
+    int comparisonsQuickSort = 0; // Initialize comparisons counter
+    quickSort(magicItemsArray, 0, magicItemsSize - 1, comparisonsQuickSort);
+
+    cout << "\nSorted Magic Items (Quick Sort):" << endl;
+    for (int i = 0; i < magicItemsSize; ++i) {
+        cout << magicItemsArray[i] << endl;
+    }
+
+    cout << "Comparisons in Quick Sort: " << comparisonsQuickSort << endl;
 
 
     // Delete dynamically allocated memory
