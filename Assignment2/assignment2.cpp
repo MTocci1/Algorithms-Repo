@@ -88,18 +88,49 @@ void mergeSort(string* arr, int left, int right, int& comparisons) {
     }
 }
 
-// Linear search function
-int linearSearch(string* arr, int size, string targetItem, int& comparisons) {
+// Linear search
+int linearSearch(string* arr, int size, string targetItem, int& linearComparisons) {
     for (int i = 0; i < size; i++) {
-        comparisons++;
+        linearComparisons++;
         if (arr[i] == targetItem) {
-            // Return the index of the item
             cout << "Found " << targetItem << " at index " << i << endl;
+            // Return the index of the item
             return i;
         }
     }
-    return -1; // Item not found
+    return -1;
 }
+
+// Binary search
+int binarySearch(string* arr, int size, string targetItem, int& binaryComparisons) {
+    int left = 0;
+    int right = size - 1;
+
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+
+        // Convert to lowercase
+        string midItem = arr[mid];
+
+        binaryComparisons++;
+
+        if (midItem == targetItem) {
+            // Return the index of the item
+            cout << "Found " << targetItem << " at index " << mid << endl;
+            return mid;
+        }
+        else if (midItem < targetItem) {
+            left = mid + 1;
+        }
+        else {
+            right = mid - 1;
+        }
+    }
+
+    return -1;
+}
+
+
 
 int main() {
 
@@ -144,23 +175,40 @@ int main() {
     // Sort the strings using merge sort
     mergeSort(magicItemsArray, 0, magicItemsSize - 1, comparisonsMergeSort);
 
-
+    // Set up randomizer
     random_device rd;
     srand(rd());
-    int totalComparisons = 0;
+
+    // Search
+    int totalComparisonsLinear = 0;
+    int totalComparisonsBinary = 0;
+
     for (int i = 0; i < 42; i++) {
         // Generate a random index between 0 and the size of the array
         int index = rand() % (magicItemsSize);
-        int comparisons = 0;
+
+        int linearComparisons = 0;
+        int binaryComparisons = 0;
+
         string targetItem = magicItemsArray[index]; 
-        linearSearch(magicItemsArray, magicItemsSize, targetItem, comparisons);
-        totalComparisons += comparisons;
-        cout << "Search " << (i + 1) << " comparisons: " << comparisons << "\n" << endl;
+
+        linearSearch(magicItemsArray, magicItemsSize, targetItem, linearComparisons);
+        binarySearch(magicItemsArray, magicItemsSize, targetItem, binaryComparisons);
+
+        totalComparisonsLinear += linearComparisons;
+        totalComparisonsBinary += binaryComparisons;
+
+        cout << "Search " << (i + 1) << " linear comparisons: " << linearComparisons << "\n";
+        cout << "Search " << (i + 1) << " binary comparisons: " << binaryComparisons << "\n" << endl;
     }
 
     // Convert totalComparisons to a double and divide by 42 for average
-    double averageComparisons = static_cast<double>(totalComparisons) / 42;
-    printf("Average comparisons for linear search: %.2f\n", averageComparisons); 
+    double averageComparisonsLinear = static_cast<double>(totalComparisonsLinear) / 42;
+    printf("Average comparisons for linear search: %.2f\n", averageComparisonsLinear); 
+
+    // Convert totalComparisons to a double and divide by 42 for average
+    double averageComparisonsBinary = static_cast<double>(totalComparisonsBinary) / 42;
+    printf("Average comparisons for binary search: %.2f\n", averageComparisonsBinary);
 
     // Delete dynamically allocated memory
     delete[] magicItemsArray;
