@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <list>
 // Include for std::random_device
 #include <random>
 
@@ -33,7 +34,7 @@ void merge(string* arr, int left, int mid, int right, int& comparisons) {
     int k = left;
 
     while (i < sizeLeft && j < sizeRight) {
-        // Convert characters to lowercase for case-insensitive comparison
+        // Convert characters to lowercase
         for (char& ch : leftArray[i]) {
             ch = tolower(ch);
         }
@@ -130,6 +131,51 @@ int binarySearch(string* arr, int size, string targetItem, int& binaryComparison
     return -1;
 }
 
+const int TABLE_SIZE = 250;
+
+// Hash table, using a linked list for chaining
+list<string> hashTable[TABLE_SIZE];
+
+// Hash function
+int makeHashCode(const string& str) {
+    string upperStr = str;
+    for (char& c : upperStr) {
+        c = toupper(c);
+    }
+
+    int letterTotal = 0;
+    for (char c : upperStr) {
+        letterTotal += static_cast<int>(c);
+    }
+
+    int hashCode = (letterTotal * 1) % TABLE_SIZE;
+
+    return hashCode;
+}
+
+// Load items into the hash table
+void loadHashTable(string* magicItemsArray, int magicItemsSize) {
+    for (int i = 0; i < magicItemsSize; i++) {
+        int hashCode = makeHashCode(magicItemsArray[i]);
+        hashTable[hashCode].push_back(magicItemsArray[i]);
+    }
+}
+
+// Retrieve an item from the hash table
+int retrieveItem(const string& item, int& hashComparisons) {
+    int hashCode = makeHashCode(item);
+
+    for (const string& listItem : hashTable[hashCode]) {
+        hashComparisons++;
+        if (listItem == item) {
+            cout << "Retrieved " << item << " from hash table." << endl;
+            return hashComparisons;
+        }
+    }
+
+    cout << item << " not found with " << endl;
+    return hashComparisons;
+}
 
 
 int main() {
@@ -175,6 +221,9 @@ int main() {
     // Sort the strings using merge sort
     mergeSort(magicItemsArray, 0, magicItemsSize - 1, comparisonsMergeSort);
 
+    // Load magic items into the hash table
+    loadHashTable(magicItemsArray, magicItemsSize);
+
     // Set up randomizer
     random_device rd;
     srand(rd());
@@ -182,6 +231,7 @@ int main() {
     // Search
     int totalComparisonsLinear = 0;
     int totalComparisonsBinary = 0;
+    int totalComparisonsHash = 0;
 
     for (int i = 0; i < 42; i++) {
         // Generate a random index between 0 and the size of the array
@@ -189,26 +239,33 @@ int main() {
 
         int linearComparisons = 0;
         int binaryComparisons = 0;
+        int hashComparisons = 0;
 
         string targetItem = magicItemsArray[index]; 
 
         linearSearch(magicItemsArray, magicItemsSize, targetItem, linearComparisons);
         binarySearch(magicItemsArray, magicItemsSize, targetItem, binaryComparisons);
 
+        retrieveItem(targetItem, hashComparisons);
+
         totalComparisonsLinear += linearComparisons;
         totalComparisonsBinary += binaryComparisons;
+        totalComparisonsHash += hashComparisons;
 
-        cout << "Search " << (i + 1) << " linear comparisons: " << linearComparisons << "\n";
-        cout << "Search " << (i + 1) << " binary comparisons: " << binaryComparisons << "\n" << endl;
+        cout << "Search " << (i + 1) << " linear comparisons: " << linearComparisons << endl;
+        cout << "Search " << (i + 1) << " binary comparisons: " << binaryComparisons << endl;
+        cout << "Search " << (i + 1) << " hash table comparisons: " << hashComparisons << "\n" << endl;
     }
 
     // Convert totalComparisons to a double and divide by 42 for average
     double averageComparisonsLinear = static_cast<double>(totalComparisonsLinear) / 42;
     printf("Average comparisons for linear search: %.2f\n", averageComparisonsLinear); 
 
-    // Convert totalComparisons to a double and divide by 42 for average
     double averageComparisonsBinary = static_cast<double>(totalComparisonsBinary) / 42;
     printf("Average comparisons for binary search: %.2f\n", averageComparisonsBinary);
+
+    double averageComparisonsHash = static_cast<double>(totalComparisonsHash) / 42;
+    printf("Average comparisons for hash retrieval: %.2f\n", averageComparisonsHash);
 
     // Delete dynamically allocated memory
     delete[] magicItemsArray;
