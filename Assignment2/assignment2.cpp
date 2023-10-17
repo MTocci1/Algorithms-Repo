@@ -110,7 +110,6 @@ int binarySearch(string* arr, int size, string targetItem, int& binaryComparison
     while (left <= right) {
         int mid = left + (right - left) / 2;
 
-        // Convert to lowercase
         string midItem = arr[mid];
 
         binaryComparisons++;
@@ -139,13 +138,13 @@ list<string> hashTable[TABLE_SIZE];
 // Hash function
 int makeHashCode(const string& str) {
     string upperStr = str;
-    for (char& c : upperStr) {
-        c = toupper(c);
+    for (char& ch : upperStr) {
+        ch = toupper(ch);
     }
 
     int letterTotal = 0;
-    for (char c : upperStr) {
-        letterTotal += static_cast<int>(c);
+    for (char ch : upperStr) {
+        letterTotal += static_cast<int>(ch);
     }
 
     int hashCode = (letterTotal * 1) % TABLE_SIZE;
