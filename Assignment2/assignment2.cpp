@@ -244,7 +244,6 @@ int main() {
 
         linearSearch(magicItemsArray, magicItemsSize, targetItem, linearComparisons);
         binarySearch(magicItemsArray, magicItemsSize, targetItem, binaryComparisons);
-
         retrieveItem(targetItem, hashComparisons);
 
         totalComparisonsLinear += linearComparisons;
