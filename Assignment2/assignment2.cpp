@@ -163,6 +163,8 @@ void loadHashTable(string* magicItemsArray, int magicItemsSize) {
 // Retrieve an item from the hash table
 int retrieveItem(const string& item, int& hashComparisons) {
     int hashCode = makeHashCode(item);
+    // count the get comparison
+    hashComparisons++;
 
     for (const string& listItem : hashTable[hashCode]) {
         hashComparisons++;
