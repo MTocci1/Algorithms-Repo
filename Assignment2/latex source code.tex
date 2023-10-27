@@ -1,0 +1,682 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% CMPT xxx
+% Some Semester
+% Lab/Assignment/Project X
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Short Sectioned Assignment
+% LaTeX Template
+% Version 1.0 (5/5/12)
+%
+% This template has been downloaded from: http://www.LaTeXTemplates.com
+% Original author: % Frits Wenneker (http://www.howtotex.com)
+% License: CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+% Modified by Alan G. Labouseur  - alan@labouseur.com
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[letterpaper, 10pt,DIV=13]{scrartcl} 
+
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\usepackage[english]{babel} % English language/hyphenation
+\usepackage{amsmath,amsfonts,amsthm,xfrac} % Math packages
+\usepackage{sectsty} % Allows customizing section commands
+\usepackage{graphicx}
+\usepackage[lined,linesnumbered,commentsnumbered]{algorithm2e}
+\usepackage{listings}
+\usepackage{parskip}
+\usepackage{lastpage}
+\usepackage{lineno}
+\usepackage{float}
+
+\allsectionsfont{\normalfont\scshape} % Make all section titles in default font and small caps.
+
+\usepackage{fancyhdr} % Custom headers and footers
+\pagestyle{fancyplain} % Makes all pages in the document conform to the custom headers and footers
+
+\fancyhead{} % No page header - if you want one, create it in the same way as the footers below
+\fancyfoot[L]{} % Empty left footer
+\fancyfoot[C]{} % Empty center footer
+\fancyfoot[R]{page \thepage\ of \pageref{LastPage}} % Page numbering for right footer
+
+\renewcommand{\headrulewidth}{0pt} % Remove header underlines
+\renewcommand{\footrulewidth}{0pt} % Remove footer underlines
+\setlength{\headheight}{13.6pt} % Customize the height of the header
+
+\numberwithin{equation}{section} % Number equations within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+\numberwithin{figure}{section} % Number figures within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+\numberwithin{table}{section} % Number tables within sections (i.e. 1.1, 1.2, 2.1, 2.2 instead of 1, 2, 3, 4)
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs.
+
+\binoppenalty=3000
+\relpenalty=3000
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} % Create horizontal rule command with 1 argument of height
+
+\title{	
+   \normalfont \normalsize 
+   \textsc{CMPT 435 - Fall 2023 - Dr. Labouseur} \\[10pt] % Header stuff.
+   \horrule{0.5pt} \\[0.25cm] 	% Top horizontal rule
+   \huge Assignment Two  \\     	    % Assignment title
+   \horrule{0.5pt} \\[0.25cm] 	% Bottom horizontal rule
+}
+
+\author{Alex Tocci \\ \normalsize Mason.Tocci1@Marist.edu}
+
+\date{\normalsize\today} 	% Today's date.
+
+\begin{document}
+\maketitle % Print the title
+
+%----------------------------------------------------------------------------------------
+%   Sort Magic Items
+%----------------------------------------------------------------------------------------
+\section{Sorting}
+\subsection{Merge Sort}
+\subsubsection{Merge Function}
+% Insert C++ code with line numbers
+\begin{linenumbers}
+\begin{lstlisting}[language=C++, caption={Merge Function}, label={code:example}]
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <list>
+// Include for std::random_device
+#include <random>
+
+using namespace std;
+
+// Function to merge two sorted subarrays
+void merge(string* arr, int left, int mid, int right, int& comparisons) {
+    // Calculate the sizes of the subarrays
+    int sizeLeft = mid - left + 1;
+    int sizeRight = right - mid;
+
+    // Create temporary arrays for the subarrays
+    string* leftArray = new string[sizeLeft];
+    string* rightArray = new string[sizeRight];
+
+    // Copy data to temporary arrays
+    for (int i = 0; i < sizeLeft; ++i) {
+        leftArray[i] = arr[left + i];
+    }
+    for (int i = 0; i < sizeRight; ++i) {
+        rightArray[i] = arr[mid + 1 + i];
+    }
+
+    // Merge the two subarrays back into array
+    // Index for the left subarray
+    int i = 0; 
+    // Index for the right subarray
+    int j = 0; 
+    // Index for the merged array
+    int k = left; 
+
+    while (i < sizeLeft && j < sizeRight) {
+        // Convert characters to lowercase
+        for (char& ch : leftArray[i]) {
+            ch = tolower(ch);
+        }
+        for (char& ch : rightArray[j]) {
+            ch = tolower(ch);
+        }
+
+        comparisons++;
+        // Compare and merge based on lowercase strings
+        if (leftArray[i] <= rightArray[j]) {
+            arr[k] = leftArray[i];
+            ++i;
+        }
+        else {
+            arr[k] = rightArray[j];
+            ++j;
+        }
+        ++k;
+    }
+
+    // Copy the remaining elements of leftArray[], if any
+    while (i < sizeLeft) {
+        arr[k] = leftArray[i];
+        ++i;
+        ++k;
+    }
+
+    // Copy the remaining elements of rightArray[], if any
+    while (j < sizeRight) {
+        arr[k] = rightArray[j];
+        ++j;
+        ++k;
+    }
+
+    // Delete temporary arrays
+    delete[] leftArray;
+    delete[] rightArray;
+}
+\end{lstlisting}
+\end{linenumbers}
+\nolinenumbers
+
+\textbf{Lines 1-6:} First we must include the necessary C++ libraries for our program to run. \\
+\textbf{Line 8:} This allows us to use standard C++ functions without the prefix 'std::'. \\
+\textbf{Line 11:} This function, is a part of the merge sort algorithm and involves merging two sorted subarrays into a single sorted array. \\
+\textbf{Lines 13-14:} Calculate the sizes of the two subarrays. \\
+\textbf{Lines 17-18:} Create temporary arrays for the left and right subarray. \\
+\textbf{Lines 21-26:} Two 'for' loops copy the data from the original array into the subarrays.  \\
+\textbf{Lines 30-34:} Merge the subarrays back into the original array. Initialize, three index variables: 'i' for the left subarray, 'j' for the right subarray, 'k' for the merged array.  \\
+\textbf{Lines 36-43:} Elements in the left and right subarrays are converted to lowercase. \\
+\textbf{Line 45:}Increment 'comparisons' to keep track of the number of comparisons made. \\
+\textbf{Lines 47-56:} Elements are compared based on their lowercase strings. The smaller element between the left subarray and right subarray is copied into the merged array. The index of the smaller element is incremented. Index 'k' is also incremented. \\
+\textbf{Lines 59-70:} The two 'while' loops copy the remaining elements in the left and right subarrays to the merged array. \\
+\textbf{Lines 73-75:} Delete the left and right subarrays.
+
+\subsubsection{mergeSort Function}
+% Insert C++ code with line numbers
+\begin{linenumbers}
+\begin{lstlisting}[language=C++, caption={mergeSort Function}, label={code:example}]
+// Merge sort 
+void mergeSort(string* arr, int left, int right, int& comparisons) {
+    if (left < right) {
+        // Find the middle point
+        int mid = left + (right - left) / 2;
+
+        // Recursively sort the first and second halves
+        mergeSort(arr, left, mid, comparisons);
+        mergeSort(arr, mid + 1, right, comparisons);
+
+        // Merge the sorted halves
+        merge(arr, left, mid, right, comparisons);
+    }
+}
+\end{lstlisting}
+\end{linenumbers}
+\nolinenumbers
+
+\textbf{Lines 77-80:}  If the left index of the current subarray is less than the right index of the current subarray, find the middle point. Calculate the midpoint by taking the average of 'left' and 'right'. The midpoint is the place where the array will be split. \\
+\textbf{Lines 83-84:} The function recursively calls itself to sort the two halves of the current subarray. The first recursive call sorts the left half of the subarray and the second recursive call sorts the right half of the subarray. These recursive calls split the subarrays into smaller and smaller arrays until they contain only one element. \\
+\textbf{Line 87:} Once the left and right halves of the subarray are sorted, the 'merge' function is called to merge them back together into a single sorted subarray.
+
+
+%----------------------------------------------------------------------------------------
+%   End Sorting
+%----------------------------------------------------------------------------------------
+
+\pagebreak
+
+%----------------------------------------------------------------------------------------
+%   Searching
+%----------------------------------------------------------------------------------------
+\section{Searching}
+\subsection{Linear Search}
+
+% Insert C++ code with line numbers
+\begin{linenumbers}
+\begin{lstlisting}[language=C++, caption={Linear Search}, label={code:example}]
+// Linear search
+int linearSearch(string* arr, int size, string targetItem, int& linearComparisons) {
+    for (int i = 0; i < size; i++) {
+        linearComparisons++;
+        if (arr[i] == targetItem) {
+            cout << "Found " << targetItem << " at index " << i << endl;
+            // Return the index of the item
+            return i;
+        }
+    }
+    return -1;
+}
+\end{lstlisting}
+\end{linenumbers}
+\nolinenumbers
+
+\textbf{Lines 91-92:} Loop through the entire array, visiting each index. \\
+\textbf{Line 93:} Increment 'linearComparisons' to keep track of the number of comparisons made. \\
+\textbf{Lines 94-99:} If the value at index 'i' is equal to 'targetItem', print that the 'targetItem' was found and return the index 'i'. \\
+\textbf{Line 100:} Return -1 if 'targetItem' was not found.
+
+
+\subsection{Binary Search}
+
+% Insert C++ code with line numbers
+\begin{linenumbers}
+\begin{lstlisting}[language=C++, caption={Binary Search}, label={code:example}]
+// Binary search
+int binarySearch(string* arr, int size, string targetItem, int& binaryComparisons) {
+    int left = 0;
+    int right = size - 1;
+
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+
+        string midItem = arr[mid];
+
+        binaryComparisons++;
+
+        if (midItem == targetItem) {
+            // Return the index of the item
+            cout << "Found " << targetItem << " at index " << mid << endl;
+            return mid;
+        }
+        else if (midItem < targetItem) {
+            left = mid + 1;
+        }
+        else {
+            right = mid - 1;
+        }
+    }
+
+    return -1;
+}
+\end{lstlisting}
+\end{linenumbers}
+\nolinenumbers
+
+\textbf{Lines 103-105:} Initialize 'left' to 0 and 'right' to size -1. \\
+\textbf{Lines 107- 110:} While left is less than or equal to right, calculate the mid point and set 'midItem' to the value at index 'arr[mid]'. \\
+\textbf{Line 112:} Increment 'binaryComparisons' to keep track of the number of comparisons made. \\
+\textbf{Lines 114-118:} If 'midItem' is equal to 'targetItem', print that the 'targetItem' was found and return the index 'mid'. \\
+\textbf{Lines 119-121:} If 'midItem' is less than 'targetItem', update 'left' to 'mid + 1'. \\
+\textbf{Lines 122-125:} If 'midItem' is greater than 'targetItem', update 'right' to 'mid - 1'. \\
+\textbf{Line 127:} Return -1 if 'targetItem' was not found.
+
+%----------------------------------------------------------------------------------------
+%   End Searching
+%----------------------------------------------------------------------------------------
+
+\pagebreak
+
+%----------------------------------------------------------------------------------------
+%   Hash Table
+%----------------------------------------------------------------------------------------
+\section{Hash Table}
+\subsection{Make Hash Code}
+
+% Insert C++ code with line numbers
+\begin{linenumbers}
+\begin{lstlisting}[language=C++, caption={Make Hash Code}, label={code:example}]
+const int TABLE_SIZE = 250;
+
+// Hash table, using a linked list for chaining
+list<string> hashTable[TABLE_SIZE];
+
+// Hash function
+int makeHashCode(const string& str) {
+    string upperStr = str;
+    for (char& ch : upperStr) {
+        ch = toupper(ch);
+    }
+
+    int letterTotal = 0;
+    for (char ch : upperStr) {
+        letterTotal += static_cast<int>(ch);
+    }
+
+    int hashCode = (letterTotal * 1) % TABLE_SIZE;
+
+    return hashCode;
+}
+\end{lstlisting}
+\end{linenumbers}
+\nolinenumbers
+
+\textbf{Line 129:} Initialize the hash table size to 250. \\
+\textbf{Line 131:} Create a hash table array of size 250. This array stores linked lists. \\
+\textbf{Lines 135-139:} Initialize 'upperStr' equal to the string passed in. Convert all letters of 'upperStr' to uppercase. \\
+\textbf{Lines 141-144:} Initialize 'letterTotal' to 0. Loop through the characters in 'upperStr', counting the number of letters. \\
+\textbf{Line 146:} Set the hash code equal to the number of letters and ensure the hash code is within the range of the hash table size. \\
+\textbf{Line 148:} Return the hash code. \\
+
+
+\subsection{Load Hash Table}
+
+% Insert C++ code with line numbers
+\begin{linenumbers}
+\begin{lstlisting}[language=C++, caption={Load Hash Table}, label={code:example}]
+// Load items into the hash table
+void loadHashTable(string* magicItemsArray, int magicItemsSize) {
+    for (int i = 0; i < magicItemsSize; i++) {
+        int hashCode = makeHashCode(magicItemsArray[i]);
+        hashTable[hashCode].push_back(magicItemsArray[i]);
+    }
+}
+\end{lstlisting}
+\end{linenumbers}
+\nolinenumbers
+
+\textbf{Lines 151-152:} Loop through the entire array, visiting every index. \\
+\textbf{Line 153:} Call 'makeHashCode' to get the hash code for the item at index 'i'. \\
+\textbf{Line 154:} Push the item to the hash table, using the hash code as the index. \\
+
+\subsection{Retrieve Item}
+
+% Insert C++ code with line numbers
+\begin{linenumbers}
+\begin{lstlisting}[language=C++, caption={Retrieve Item}, label={code:example}]
+// Retrieve an item from the hash table
+int retrieveItem(const string& item, int& hashComparisons) {
+    int hashCode = makeHashCode(item);
+    // count the get comparison
+    hashComparisons++;
+
+    for (const string& listItem : hashTable[hashCode]) {
+        hashComparisons++;
+        if (listItem == item) {
+            cout << "Retrieved " << item << " from hash table." << endl;
+            return hashComparisons;
+        }
+    }
+
+    cout << item << " not found with " << endl;
+    return hashComparisons;
+}
+\end{lstlisting}
+\end{linenumbers}
+\nolinenumbers
+
+\textbf{Lines 158-159:} Call 'makeHashCode' to get the hash code of the target item. \\
+\textbf{Line 161:} Increment 'hashComparisons' to count the 'get' comparison. \\
+\textbf{Line 163:} Loop through the linked list that corresponds with the hash code, visiting each index. \\
+\textbf{Line 164:} Increment 'hashComparisons' to keep track of the number of comparisons made. \\
+\textbf{Lines 165-169:} If the 'listItem' equals the target item, print that the item was found and return hash comparisons. \\
+\textbf{Lines 171-173:} If the target item was not found, print that the item was not found and return hash comparisons. \\
+
+%----------------------------------------------------------------------------------------
+%   End Hash Table
+%----------------------------------------------------------------------------------------
+
+\pagebreak
+
+%----------------------------------------------------------------------------------------
+%   Main Function
+%----------------------------------------------------------------------------------------
+\section{Main Function}
+\subsection{Read 'magicitems.txt' and store items into an array}
+% Insert C++ code with line numbers
+\begin{linenumbers}
+\begin{lstlisting}[language=C++, caption={Store Items in Array}, label={code:example}]
+// Read all lines of magicitems.txt and put them in an array
+// Open the magicitems.txt file
+ifstream file("magicitems.txt");
+
+// Handle failure
+if (!file) 
+{
+    cerr << "Failed to open magicitems.txt" << endl;
+    return 1;
+}
+
+// Count the number of lines in the file
+int magicItemsSize = 0;
+string line;
+while (getline(file, line)) 
+{
+    magicItemsSize++;
+}
+
+// Close and reopen the file to read from the beginning
+file.close();
+file.open("magicitems.txt");
+
+// Create a dynamically allocated array
+string* magicItemsArray = new string[magicItemsSize];
+
+// Read the file line by line and store each line in the array
+int index = 0;
+while (getline(file, line)) 
+{
+    magicItemsArray[index] = line;
+    index++;
+}
+
+// Close the file
+file.close();
+\end{lstlisting}
+\end{linenumbers}
+\nolinenumbers
+
+\textbf{Line 176:} Open the file 'magicitems.txt' for reading. \\
+\textbf{Lines 179-183:} Check if the file was successfully opened. If the file cannot be opened, print an error message and exit the program. \\
+\textbf{Lines 186-191:} Read the file line by line and count the number of lines in the file. Increment the 'magicItemsSize' variable for each line read. \\
+\textbf{Lines 194-195:} Close and reopen the file to read from the beginning. \\
+\textbf{Line 198:} Create a dynamically allocated array of strings named 'magicItemsArray'. Set the size equal to 'magicItemsSize'. \\
+\textbf{Lines 201-206:} Read the file line by line and store each line in the array. \\
+\textbf{Line 209:} Close the file.
+
+\subsection{Merge Sort and Load Hash Table}
+% Insert C++ code with line numbers
+\begin{linenumbers}
+\begin{lstlisting}[language=C++, caption={Merge Sort and Load Hash Table}, label={code:example}]
+int comparisonsMergeSort = 0;
+// Sort the strings using merge sort in a case-insensitive manner
+mergeSort(magicItemsArray, 0, magicItemsSize - 1, comparisonsMergeSort);
+
+// Load magic items into the hash table
+loadHashTable(magicItemsArray, magicItemsSize);
+\end{lstlisting}
+\end{linenumbers}
+\nolinenumbers
+
+\textbf{Lines 210-212:} Initialize an integer variable named 'comparisonsMergeSort' to zero. Sort the array using the merge sort algorithm. The 'comparisonsMergeSort' variable is passed into the function, allowing the number of comparisons to be counted. \\
+\textbf{Line 215:} Load the hash table using the 'loadHashTable' function, passing in 'magicItemsArray' and 'magicItemsSize'.
+
+\subsection{Conduct Searching}
+% Insert C++ code with line numbers
+\begin{linenumbers}
+\begin{lstlisting}[language=C++, caption={Conduct Searching}, label={code:example}]
+ // Set up randomizer
+ random_device rd;
+ srand(rd());
+
+ // Search
+ int totalComparisonsLinear = 0;
+ int totalComparisonsBinary = 0;
+ int totalComparisonsHash = 0;
+
+ for (int i = 0; i < 42; i++) {
+     // Generate a random index between 0 and the size of the array
+     int index = rand() % (magicItemsSize);
+
+     int linearComparisons = 0;
+     int binaryComparisons = 0;
+     int hashComparisons = 0;
+
+     string targetItem = magicItemsArray[index]; 
+
+     linearSearch(magicItemsArray, magicItemsSize, targetItem, linearComparisons);
+     binarySearch(magicItemsArray, magicItemsSize, targetItem, binaryComparisons);
+     retrieveItem(targetItem, hashComparisons);
+
+     totalComparisonsLinear += linearComparisons;
+     totalComparisonsBinary += binaryComparisons;
+     totalComparisonsHash += hashComparisons;
+
+     cout << "Search " << (i + 1) << " linear comparisons: " << linearComparisons << endl;
+     cout << "Search " << (i + 1) << " binary comparisons: " << binaryComparisons << endl;
+     cout << "Search " << (i + 1) << " hash table comparisons: " << hashComparisons << "\n" << endl;
+ }
+\end{lstlisting}
+\end{linenumbers}
+\nolinenumbers
+
+\textbf{Lines 217-223:} Initialize the randomizer and total comparisons for each searching method. \\
+\textbf{Line 225:} Loop through the following code 42 times. \\
+\textbf{Line 227:} Get a random index between 0 and the size of 'magicItemsArray'. \\
+\textbf{Lines 229-231:} Initialize the comparisons for each search method. \\
+\textbf{Line 233:} Initialize the target item and set it to the value located at the random index 'index'. \\
+\textbf{Lines 235-237:} Search for the target item using each searching method, calling each function. The comparisons will be updated. \\
+\textbf{Lines 239-241:} Add the number of comparisons to the corresponding total comparisons. \\
+\textbf{Lines 243-246:} Print the result of each sorting method.
+
+\subsection{Print Average Comparisons}
+% Insert C++ code with line numbers
+\begin{linenumbers}
+\begin{lstlisting}[language=C++, caption={Print Average Comparisons}, label={code:example}]
+    // Convert totalComparisons to a double and divide by 42 for average
+    double averageComparisonsLinear = static_cast<double>(totalComparisonsLinear) / 42;
+    printf("Average comparisons for linear search: %.2f\n", averageComparisonsLinear); 
+
+    double averageComparisonsBinary = static_cast<double>(totalComparisonsBinary) / 42;
+    printf("Average comparisons for binary search: %.2f\n", averageComparisonsBinary);
+
+    double averageComparisonsHash = static_cast<double>(totalComparisonsHash) / 42;
+    printf("Average comparisons for hash retrieval: %.2f\n", averageComparisonsHash);
+
+    // Delete dynamically allocated memory
+    delete[] magicItemsArray;
+
+	return 0;
+}
+\end{lstlisting}
+\end{linenumbers}
+\nolinenumbers
+
+\textbf{Lines 248-255:} Convert each total comparison to a double and divide by the number of searches conducted, 42, to get the average. Print average comparisons to two decimal places. \\
+\textbf{Line 258:} Delete dynamically allocated memory.
+
+
+%----------------------------------------------------------------------------------------
+%   End Main Function
+%----------------------------------------------------------------------------------------
+
+\pagebreak
+
+%----------------------------------------------------------------------------------------
+%   Results
+%----------------------------------------------------------------------------------------
+
+\section{Results}
+
+\begin{table}[H]
+\centering
+\caption{Number of Comparisons}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Search number & Linear Search & Binary Search & Hashing \\
+\hline
+1 & 288 & 8 & 3 \\
+\hline
+2 & 263 & 7 & 2 \\
+\hline
+3 & 347 & 10 & 4 \\
+\hline
+4 & 136 & 8 & 2 \\
+\hline
+5 & 169 & 9 & 4 \\
+\hline
+6 & 3 & 9 & 2 \\
+\hline
+7 & 428 & 8 & 4 \\
+\hline
+8 & 311 & 10 & 3 \\
+\hline
+9 & 252 & 9 & 2 \\
+\hline
+10 & 203 & 10 & 2 \\
+\hline
+11 & 194 & 9 & 3 \\
+\hline
+12 & 381 & 8 & 4 \\
+\hline
+13 & 391 & 10 & 2 \\
+\hline
+14 & 172 & 9 & 3 \\
+\hline
+15 & 436 & 10 & 2 \\
+\hline
+16 & 377 & 9 & 4 \\
+\hline
+17 & 351 & 9 & 2 \\
+\hline
+18 & 635 & 6 & 4 \\
+\hline
+19 & 638 & 9 & 5 \\
+\hline
+20 & 312 & 5 & 3 \\
+\hline
+21 & 27 & 8 & 3 \\
+\hline
+22 & 118 & 7 & 2 \\
+\hline
+23 & 487 & 9 & 3 \\
+\hline
+24 & 558 & 10 & 5 \\
+\hline
+25 & 274 & 10 & 3 \\
+\hline
+26 & 130 & 9 & 2 \\
+\hline
+27 & 525 & 7 & 4 \\
+\hline
+28 & 118 & 7 & 2 \\
+\hline
+29 & 459 & 9 & 4 \\
+\hline
+30 & 112 & 10 & 3 \\
+\hline
+31 & 372 & 9 & 4 \\
+\hline
+32 & 461 & 9 & 3 \\
+\hline
+33 & 662 & 9 & 5 \\
+\hline
+34 & 632 & 8 & 6 \\
+\hline
+35 & 412 & 10 & 4 \\
+\hline
+36 & 427 & 9 & 2 \\
+\hline
+37 & 250 & 9 & 2 \\
+\hline
+38 & 456 & 9 & 3 \\
+\hline
+39 & 162 & 10 & 3 \\
+\hline
+40 & 283 & 9 & 2 \\
+\hline
+41 & 88 & 7 & 2 \\
+\hline
+42 & 262 & 9 & 5 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Averages for Comparisons}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+ & 1 & 2 & 3 & 4 & 5 & Avg of Averages \\
+\hline
+Linear Search & 370.83 & 327.74 & 294.12 & 319.64 & 355.67 & 333.60 \\
+\hline
+Binary Search & 8.50 & 8.48 & 8.26 & 8.52 & 8.17 & 8.39 \\
+\hline
+Hashing & 3.40 & 3.38 & 3.21 & 3.14 & 3.33 & 3.29 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Linear Search}
+Linear search has a time complexity of $O(n)$. This is because we loop through the array, visiting each index and checking if it is the target item. In the code, the for loop iterates 'size' times and returns when the target item is found. In the worst case (target item is the last item in the array) we would get 'size' (n) comparisons.
+\subsection{Binary Search} 
+Binary Search has a time complexity of $O(logn)$. This is because we loop through the array, repeatedly cutting it in half. In the code, the while loop runs until 'mid' equals the target item. In the worst case (target item is the last midpoint) we would get logn comparisons.
+\subsection{Hashing} 
+Hashing has a time complexity of $O(n)$. This is because we loop through a linked list (at an index specified by a hash code) visiting each index and checking if it is the target item. In the code, the ranged for loop runs until the target item is found. In the worst case (all items in magicItemsArray have the same amount of letters and the target item is the last item in the linked list) we would get n comparisons. However, we do expect our hash table to distribute fairly evenly, so the time complexity could be $O(1 + alpha)$, where alpha is the average number of items stored in each hash code index.
+
+%----------------------------------------------------------------------------------------
+%   end PROBLEM Four
+%----------------------------------------------------------------------------------------
+\pagebreak
+
+
+\end{document}
