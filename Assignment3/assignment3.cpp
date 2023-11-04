@@ -36,7 +36,7 @@ Node* insert(Node* root, string item) {
     return root;
 }
 
-// Function to perform an in-order traversal of the BST and print its content
+// In-order traversal function
 void inOrderTraversal(Node* root) {
     if (root == nullptr) {
         return;
@@ -45,6 +45,26 @@ void inOrderTraversal(Node* root) {
     inOrderTraversal(root->left);
     cout << root->data << endl;
     inOrderTraversal(root->right);
+}
+
+// Function to look up an item in the BST and print the path
+bool lookup(Node* root, string item, int& comparisons, string& path) {
+    if (root == nullptr) {
+        return false;
+    }
+
+    comparisons++; // Increment comparisons for each level
+    if (item == root->data) {
+        return true;
+    }
+    else if (item < root->data) {
+        path += "L, ";
+        return lookup(root->left, item, comparisons, path);
+    }
+    else {
+        path += "R, ";
+        return lookup(root->right, item, comparisons, path);
+    }
 }
 
 
@@ -77,6 +97,34 @@ int main() {
     cout << endl << "BST In-Order Traversal: " << endl;
     inOrderTraversal(root);
     cout << endl;
+
+    // Read magicitems-find-in-bst.txt and look up each item in the BST
+    ifstream lookupFile("magicitems-find-in-bst.txt");
+
+    if (!lookupFile) {
+        cerr << "Failed to open magicitems-find-in-bst.txt" << endl;
+        return 1;
+    }
+
+    int totalComparisons = 0;
+    int totalLookups = 0;
+
+    while (getline(lookupFile, line)) {
+        int comparisons = 0;
+        string path = "";
+        bool found = lookup(root, line, comparisons, path);
+        totalLookups++;
+        totalComparisons += comparisons;
+        if (found) {
+            cout << "Item found: " << line << endl << "Path: " << path << endl << "Comparisons: " << comparisons << endl << endl;
+        } else {
+            cout << "Item not found" << endl;
+        }
+    }
+
+    lookupFile.close();
+    double averageComparisons = static_cast<double>(totalComparisons) / totalLookups;
+    printf("Average comparisons: %.2f\n", averageComparisons);
 
     return 0;
 }
