@@ -186,11 +186,11 @@ public:
             cout << currentVertex->vertexID << " ";
             currentVertex->processed = true;
 
-            comparisons++;
-
             for (Vertex* neighbor : currentVertex->neighbors) {
                 if (!neighbor->processed) {
                     DFS(neighbor, comparisons);
+
+                    comparisons++;
                 }
             }
         }
