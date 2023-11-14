@@ -181,14 +181,16 @@ public:
     }
 
     // Depth-first traversal function
-    void DFS(Vertex* currentVertex) {
+    void DFS(Vertex* currentVertex, int& comparisons) {
         if (currentVertex && !currentVertex->processed) {
             cout << currentVertex->vertexID << " ";
             currentVertex->processed = true;
 
+            comparisons++;
+
             for (Vertex* neighbor : currentVertex->neighbors) {
                 if (!neighbor->processed) {
-                    DFS(neighbor);
+                    DFS(neighbor, comparisons);
                 }
             }
         }
@@ -200,15 +202,19 @@ public:
             vertex.processed = false;
         }
 
+        int comparisons = 0;
+
         for (auto& vertex : vertices) {
             if (!vertex.processed) {
-                DFS(&vertex);
+                DFS(&vertex, comparisons);
             }
         }
+
+        cout << "\nNumber of comparisons: " << comparisons << endl;
     }
 
     // Breadth-first traversal function
-    void BFS(Vertex* startVertex) const {
+    void BFS(Vertex* startVertex, int& comparisons) const {
         if (!startVertex) {
             return;
         }
@@ -228,6 +234,8 @@ public:
                 if (!neighbor->processed) {
                     queue.push(neighbor);
                     neighbor->processed = true;
+
+                    comparisons++;
                 }
             }
         }
@@ -239,11 +247,15 @@ public:
             vertex.processed = false;
         }
 
+        int comparisons = 0;
+
         for (auto& vertex : vertices) {
             if (!vertex.processed) {
-                BFS(&vertex);
+                BFS(&vertex, comparisons);
             }
         }
+
+        cout << "\nNumber of comparisons: " << comparisons << endl;
     }
 };
 
