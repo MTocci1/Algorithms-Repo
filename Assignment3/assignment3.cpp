@@ -187,10 +187,9 @@ public:
             currentVertex->processed = true;
 
             for (Vertex* neighbor : currentVertex->neighbors) {
+                comparisons++;
                 if (!neighbor->processed) {
                     DFS(neighbor, comparisons);
-
-                    comparisons++;
                 }
             }
         }
@@ -205,6 +204,7 @@ public:
         int comparisons = 0;
 
         for (auto& vertex : vertices) {
+            comparisons++;
             if (!vertex.processed) {
                 DFS(&vertex, comparisons);
             }
@@ -231,11 +231,10 @@ public:
             cout << currentVertex->vertexID << " ";
 
             for (Vertex* neighbor : currentVertex->neighbors) {
+                comparisons++;
                 if (!neighbor->processed) {
                     queue.push(neighbor);
                     neighbor->processed = true;
-
-                    comparisons++;
                 }
             }
         }
@@ -250,6 +249,7 @@ public:
         int comparisons = 0;
 
         for (auto& vertex : vertices) {
+            comparisons++;
             if (!vertex.processed) {
                 BFS(&vertex, comparisons);
             }
